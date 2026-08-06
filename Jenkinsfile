@@ -61,3 +61,16 @@ pipeline {
         }
     }
 }
+stage('Test') {
+    steps {
+        sh '''
+            echo "===== Running Unit Tests ====="
+
+            dotnet test ./tests/Ordering.UnitTests/Ordering.UnitTests.csproj \
+                -c Release
+
+            dotnet test ./tests/Basket.UnitTests/Basket.UnitTests.csproj \
+                -c Release
+        '''
+    }
+}
