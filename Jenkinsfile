@@ -50,18 +50,7 @@ pipeline {
             }
         }
     }
-
-    post {
-        success {
-            echo 'BUILD SUCCESSFUL'
-        }
-
-        failure {
-            echo 'BUILD FAILED - check console output'
-        }
-    }
-}
-stage('Test') {
+    stage('Test') {
     steps {
         sh '''
             echo "===== Running Unit Tests ====="
@@ -74,3 +63,15 @@ stage('Test') {
         '''
     }
 }
+
+    post {
+        success {
+            echo 'BUILD SUCCESSFUL'
+        }
+
+        failure {
+            echo 'BUILD FAILED - check console output'
+        }
+    }
+}
+
