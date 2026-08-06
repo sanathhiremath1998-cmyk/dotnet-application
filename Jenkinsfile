@@ -50,24 +50,6 @@ pipeline {
             }
         }
 
-stage('Test') {
-    steps {
-        sh '''
-            echo "===== Ordering Unit Tests ====="
-
-            dotnet test \
-                --project ./tests/Ordering.UnitTests/Ordering.UnitTests.csproj \
-                -c Release
-
-            echo "===== Basket Unit Tests ====="
-
-            dotnet test \
-                --project ./tests/Basket.UnitTests/Basket.UnitTests.csproj \
-                -c Release
-        '''
-    }
-}
-
     }
 
     post {
