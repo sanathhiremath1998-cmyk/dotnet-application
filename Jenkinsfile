@@ -50,21 +50,23 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                sh '''
-                    echo "===== Ordering Unit Tests ====="
+stage('Test') {
+    steps {
+        sh '''
+            echo "===== Ordering Unit Tests ====="
 
-                    dotnet test ./tests/Ordering.UnitTests/Ordering.UnitTests.csproj \
-                        -c Release
+            dotnet test \
+                --project ./tests/Ordering.UnitTests/Ordering.UnitTests.csproj \
+                -c Release
 
-                    echo "===== Basket Unit Tests ====="
+            echo "===== Basket Unit Tests ====="
 
-                    dotnet test ./tests/Basket.UnitTests/Basket.UnitTests.csproj \
-                        -c Release
-                '''
-            }
-        }
+            dotnet test \
+                --project ./tests/Basket.UnitTests/Basket.UnitTests.csproj \
+                -c Release
+        '''
+    }
+}
 
     }
 
