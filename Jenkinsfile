@@ -44,34 +44,37 @@ pipeline {
             steps {
                 sh '''
                     dotnet build ./src/eShop.AppHost/eShop.AppHost.csproj \
-                    -c Release \
-                    --no-restore
+                        -c Release \
+                        --no-restore
                 '''
             }
         }
-    }
-    stage('Test') {
-    steps {
-        sh '''
-            echo "===== Running Unit Tests ====="
 
-            dotnet test ./tests/Ordering.UnitTests/Ordering.UnitTests.csproj \
-                -c Release
+        stage('Test') {
+            steps {
+                sh '''
+                    echo "===== Ordering Unit Tests ====="
 
-            dotnet test ./tests/Basket.UnitTests/Basket.UnitTests.csproj \
-                -c Release
-        '''
+                    dotnet test ./tests/Ordering.UnitTests/Ordering.UnitTests.csproj \
+                        -c Release
+
+                    echo "===== Basket Unit Tests ====="
+
+                    dotnet test ./tests/Basket.UnitTests/Basket.UnitTests.csproj \
+                        -c Release
+                '''
+            }
+        }
+
     }
-}
 
     post {
         success {
-            echo 'BUILD SUCCESSFUL'
+            echo 'BUILD AND TEST SUCCESSFUL'
         }
 
         failure {
-            echo 'BUILD FAILED - check console output'
+            echo 'PIPELINE FAILED'
         }
     }
 }
-
