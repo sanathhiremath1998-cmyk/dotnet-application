@@ -28,7 +28,12 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'dotnet test eShop.Web.slnf --configuration Release --no-build --logger "trx;LogFileName=test-results.trx" || true'
+                sh '''
+                    dotnet test eShop.Web.slnf \
+                        --configuration Release \
+                        --no-build \
+                        --logger "trx;LogFileName=test-results.trx" || true
+                '''
             }
         }
 
@@ -48,21 +53,61 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Validate Compose') {
             steps {
-                sh 'docker compose up -d'
+                sh 'docker compose config -q'
             }
         }
 
-       stage('Health Check') {
-    steps {
-        sh '''
-            sleep 10
-            curl -fsS -o /dev/null http://localhost:8185/
-            curl -fsS http://localhost:8187/health
-        '''
-    }
-}
+        stage('Deploy') {
+            steps {
+                sh '''
+                    docker compose up -d --remove-orphans
+                    docker compose ps
+                '''
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                sh '''
+                    echo "Waiting for WebApp and Catalog..."
+
+                    for i in $(seq 1 30); do
+                        if curl -fsS -o /dev/null http://localhost:8185/; then
+                            echo "WebApp is healthy."
+                            break
+                        fi
+
+                        if [ "$i" -eq 30 ]; then
+                            echo "WebApp health check failed."
+                            docker compose ps
+                            docker compose logs --tail=50 webapp
+                            exit 1
+                        fi
+
+                        sleep 2
+                    done
+
+                    for i in $(seq 1 30); do
+                        if curl -fsS http://localhost:8187/health; then
+                            echo
+                            echo "Catalog is healthy."
+                            break
+                        fi
+
+                        if [ "$i" -eq 30 ]; then
+                            echo "Catalog health check failed."
+                            docker compose ps
+                            docker compose logs --tail=50 catalog-api
+                            exit 1
+                        fi
+
+                        sleep 2
+                    done
+                '''
+            }
+        }
     }
 
     post {
@@ -77,5 +122,5 @@ pipeline {
         failure {
             echo 'Pipeline failed — check logs above.'
         }
-   }
+    }
 }
