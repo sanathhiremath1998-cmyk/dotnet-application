@@ -2,7 +2,6 @@ services:
 
   postgres:
     image: pgvector/pgvector:pg17
-    container_name: jenkins-eshop-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -20,7 +19,6 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: jenkins-eshop-rabbitmq
     restart: unless-stopped
     environment:
       RABBITMQ_DEFAULT_USER: guest
@@ -37,7 +35,6 @@ services:
 
   redis:
     image: redis:8.2
-    container_name: jenkins-eshop-redis
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -49,7 +46,6 @@ services:
 
   identity-api:
     image: eshop-identity:test
-    container_name: jenkins-eshop-identity
     restart: unless-stopped
     depends_on:
       postgres:
@@ -65,7 +61,6 @@ services:
 
   catalog-api:
     image: eshop-catalog:test
-    container_name: jenkins-eshop-catalog
     restart: unless-stopped
     depends_on:
       postgres:
@@ -84,7 +79,6 @@ services:
 
   basket-api:
     image: eshop-basket:test
-    container_name: jenkins-eshop-basket
     restart: unless-stopped
     depends_on:
       redis:
@@ -106,7 +100,6 @@ services:
 
   ordering-api:
     image: eshop-ordering:test
-    container_name: jenkins-eshop-ordering
     restart: unless-stopped
     depends_on:
       postgres:
@@ -128,7 +121,6 @@ services:
 
   order-processor:
     image: eshop-orderprocessor:test
-    container_name: jenkins-eshop-orderprocessor
     restart: unless-stopped
     depends_on:
       postgres:
@@ -146,7 +138,6 @@ services:
 
   payment-processor:
     image: eshop-paymentprocessor:test
-    container_name: jenkins-eshop-paymentprocessor
     restart: unless-stopped
     depends_on:
       rabbitmq:
@@ -159,7 +150,6 @@ services:
 
   webhooks-api:
     image: eshop-webhooks:test
-    container_name: jenkins-eshop-webhooks
     restart: unless-stopped
     depends_on:
       postgres:
@@ -178,7 +168,6 @@ services:
 
   webapp:
     image: eshop-webapp:test
-    container_name: jenkins-eshop-webapp
     restart: unless-stopped
     depends_on:
       identity-api:
@@ -201,7 +190,6 @@ services:
 
   webhooksclient:
     image: eshop-webhookclient:test
-    container_name: jenkins-eshop-webhookclient
     restart: unless-stopped
     depends_on:
       webhooks-api:

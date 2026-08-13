@@ -62,8 +62,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                    docker compose up -d --remove-orphans
-                    docker compose ps
+                    docker compose -p jenkins-eshop up -d --remove-orphans
+                    docker compose -p jenkins-eshop ps
                 '''
             }
         }
@@ -71,7 +71,7 @@ pipeline {
         stage('Health Check') {
             steps {
                 sh '''
-                    echo "Waiting for WebApp and Catalog..."
+                    echo "Waiting for WebApp..."
 
                     for i in $(seq 1 30); do
                         if curl -fsS -o /dev/null http://localhost:8185/; then
@@ -81,25 +81,27 @@ pipeline {
 
                         if [ "$i" -eq 30 ]; then
                             echo "WebApp health check failed."
-                            docker compose ps
-                            docker compose logs --tail=50 webapp
+                            docker compose -p jenkins-eshop ps
+                            docker compose -p jenkins-eshop logs --tail=50 webapp
                             exit 1
                         fi
 
                         sleep 2
                     done
 
+                    echo "Waiting for Catalog API..."
+
                     for i in $(seq 1 30); do
                         if curl -fsS http://localhost:8187/health; then
                             echo
-                            echo "Catalog is healthy."
+                            echo "Catalog API is healthy."
                             break
                         fi
 
                         if [ "$i" -eq 30 ]; then
-                            echo "Catalog health check failed."
-                            docker compose ps
-                            docker compose logs --tail=50 catalog-api
+                            echo "Catalog API health check failed."
+                            docker compose -p jenkins-eshop ps
+                            docker compose -p jenkins-eshop logs --tail=50 catalog-api
                             exit 1
                         fi
 
