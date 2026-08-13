@@ -54,15 +54,15 @@ pipeline {
             }
         }
 
-        stage('Health Check') {
-            steps {
-                sh '''
-                    sleep 10
-                    curl -f http://localhost:8085/
-                    curl -f http://localhost:8087/health
-                '''
-            }
-        }
+       stage('Health Check') {
+    steps {
+        sh '''
+            sleep 10
+            curl -fsS -o /dev/null http://localhost:8185/
+            curl -fsS http://localhost:8187/health
+        '''
+    }
+}
     }
 
     post {
@@ -77,5 +77,5 @@ pipeline {
         failure {
             echo 'Pipeline failed — check logs above.'
         }
-    }
+   }
 }
